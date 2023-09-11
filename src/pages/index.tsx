@@ -129,7 +129,7 @@ export default function Home() {
 
   return (
     <div
-      className={`h-full mb-10 ${
+      className={`h-full pb-10 ${
         theme == 'dark'
           ? 'dark bg-very-dark-blue text-light-grayish-blue'
           : 'bg-gray-100 text-gray-500'
@@ -258,7 +258,7 @@ export default function Home() {
               ))
             ) : (
               <li className="relative flex items-center justify-center py-[14px] text-[20px]">
-                <p className="z-10">
+                <p className="z-10 max-[520px]:py-2 ">
                   {toDo.length == 0
                     ? 'Nothing to do?'
                     : 'Not finished yet?'}
