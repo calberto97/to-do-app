@@ -1,4 +1,10 @@
-import { FormEvent, MouseEvent, useEffect, useRef, useState } from 'react';
+import {
+  FormEvent,
+  MouseEvent,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
 export default function Home() {
   // const [toDo, setToDo] = useState<string[]>(() => {
@@ -16,30 +22,32 @@ export default function Home() {
     'all' | 'active' | 'completed'
   >('all');
   const [renderedToDo, setRenderedToDo] = useState(toDo);
-  const [theme, setTheme] = useState<'dark' | 'light'>('light');
-  const [render, setRender] = useState<0 | 1>(0)
-  const [loading, setLoading] = useState(true)
-  // localStorage.setItem('toDos', JSON.stringify(toDo));
-
-  // useEffect(() => {
-  //   const toDosJson = localStorage.getItem('toDos');
-  //   if (toDosJson) {
-  //     let toDos = JSON.parse(toDosJson);
-  //     setToDo(toDos);
-  //   }
-  // }, []);
+  const [theme, setTheme] = useState<'dark' | 'light'>();
+  const [render, setRender] = useState<0 | 1>(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const storedToDo = localStorage.getItem('toDo');
       const storedActive = localStorage.getItem('active');
       const storedCompleted = localStorage.getItem('completed');
-      console.log(`useEffect1 - ${storedToDo}`);
+      const storedTheme = localStorage.getItem('theme');
+
       if (storedToDo && storedActive && storedCompleted) {
         setToDo(JSON.parse(storedToDo));
         setActive(JSON.parse(storedActive));
         setCompleted(JSON.parse(storedCompleted));
-        setRender(1)
+        setRender(1);
+      }
+
+      if (storedTheme == 'dark' || storedTheme == 'light') {
+        setTheme(storedTheme);
+      } else if (
+        window.matchMedia('(prefers-color-scheme: dark)').matches
+      ) {
+        localStorage.setItem('theme', 'dark');
+      } else {
+        localStorage.setItem('theme', 'light');
       }
     }
   }, []);
@@ -64,14 +72,14 @@ export default function Home() {
       localStorage.setItem('toDo', JSON.stringify(toDo));
       localStorage.setItem('active', JSON.stringify(active));
       localStorage.setItem('completed', JSON.stringify(completed));
-      console.log(`useEffect2 - ${toDo}`);
-      setLoading(false)
+      setLoading(false);
+
       if (filter == 'all') {
         setRenderedToDo(toDo);
       } else if (filter == 'active') {
-        setRenderedToDo(active)
+        setRenderedToDo(active);
       } else {
-        setRenderedToDo(completed)
+        setRenderedToDo(completed);
       }
     }
   }, [toDo, active, completed, render]);
@@ -104,7 +112,6 @@ export default function Home() {
     } else {
       setCompleted([...completed, targetToDo]);
       setActive(active.filter((task) => task != targetToDo));
-      console.log(completed);
     }
   };
 
@@ -127,7 +134,7 @@ export default function Home() {
     );
   };
 
-  return (
+  return theme ? (
     <div
       className={`h-full pb-10 ${
         theme == 'dark'
@@ -156,14 +163,20 @@ export default function Home() {
             src="icon-sun.svg"
             alt="moon dark mode"
             className="h-6 hover:cursor-pointer"
-            onClick={() => setTheme('light')}
+            onClick={() => {
+              setTheme('light');
+              localStorage.setItem('theme', 'light');
+            }}
           />
         ) : (
           <img
             src="icon-moon.svg"
             alt="moon dark mode"
             className="h-6 hover:cursor-pointer"
-            onClick={() => setTheme('dark')}
+            onClick={() => {
+              setTheme('dark');
+              localStorage.setItem('theme', 'dark');
+            }}
           />
         )}
       </header>
@@ -364,5 +377,7 @@ export default function Home() {
         </div>
       </main>
     </div>
+  ) : (
+    ''
   );
 }
